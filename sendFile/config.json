@@ -1,0 +1,11 @@
+{
+    "user_conf":{
+        "write a name here":{
+            "user_name":"",
+            "passwd":"",
+            "host" : "",
+            "send_path":""
+        }
+    }
+}
+~   
