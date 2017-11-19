@@ -4,5 +4,6 @@ share some useful scripts in my work.
 package files then transfer files.
 
 click -> [more detail ...](https://github.com/zzjack/myScript/blob/master/sendFile/README.md)
+## newname
 
 

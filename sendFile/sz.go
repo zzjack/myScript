@@ -14,11 +14,16 @@ import (
 
 //It went through in Ubuntu 17.04
 
+//2017/11/17
+//add new feature,support different port;
+
+
 type targetArgu struct {
 	UserName string
 	Passwd   string
 	Host     string
-	SendPath string
+    Port string 
+    SendPath string
 }
 
 type conf struct {
@@ -30,9 +35,10 @@ type UserConfig struct {
 	Passwd   string `json:"passwd"`
 	Host     string `json:"host"`
 	SendPath string `json:"send_path"`
+    Port string `json:"port"`
 }
 
-var configPath = "set entire config path"
+var configPath = "/home/zzjack/tools/config.json"
 
 func main() {
 	//confirm an argument existing
@@ -48,6 +54,7 @@ func main() {
 	t.Passwd = conf.Passwd
 	t.Host = conf.Host
 	t.SendPath = conf.SendPath
+    t.Port = conf.Port
 	log.Println("read config of send path ==>", t.SendPath)
 	filePath, fileName := t.distinctPathFile(input)
 	tarName := fmt.Sprintf("%s.tar.gz", fileName)
@@ -94,7 +101,7 @@ func (t targetArgu) compressFile(tarName, input string) {
 
 func (t targetArgu) sendFile(tarFilePath string) {
 	//send to another machine
-	spawnCommand := fmt.Sprintf("scp %s %s@%s:%s", tarFilePath, t.UserName, t.Host, t.SendPath)
+	spawnCommand := fmt.Sprintf("scp -P %s %s %s@%s:%s",t.Port,tarFilePath, t.UserName, t.Host, t.SendPath)
 	log.Println("Executing Command ==>", spawnCommand)
 	child, err := gexpect.Spawn(spawnCommand)
 	if err != nil {
