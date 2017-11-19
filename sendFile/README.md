@@ -1,9 +1,5 @@
 ## sz
-package files and transfer files.
-### Install
-```
-git clone https://github.com/zzjack/myScript
-``` 
+package files and transfer files. 
 ### Quick Start
 1. edit config.json.
 2. edit sz.go,set configPath,as shown
