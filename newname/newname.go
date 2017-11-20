@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 	"os/exec"
+	"fmt"
 )
 
 var minuim int
@@ -19,13 +20,14 @@ type nametuple struct {
 	item string
 }
 
+//debug:Chinese brackets and English brackets are different.
 func init() {
 	patternStick, _ = regexp.Compile(`\W`)
-	patternFile, _ = regexp.Compile(`[A-Z|a-z|\s|\d]`)
+	patternFile, _ = regexp.Compile(`[A-Z|a-z|\s|\d|\(|\)|\\|\.|/|）|（]`)
 	minuim = 1
 }
 
-func main() {
+func mains() {
 	fileName := extractFrom(os.Args)
 	illegaled, fileChar := pickFrom(fileName)
 	joined := joinillegaled(illegaled)
@@ -36,6 +38,23 @@ func main() {
 	legalFileName := makelegalFilename(replaced, fileChar)
 	path,newFileName := makeNew(strings.Join(legalFileName, ""))
 	renameFile(newFileName,path,fileName)
+}
+
+func main(){
+	mainTest()
+}
+
+func mainTest(){
+	fileName := "./海米风控模型1.21（标记版）.xlsx"
+	illegaled, fileChar := pickFrom(fileName)
+	joined := joinillegaled(illegaled)
+	spell := turnToSpell(joined)
+	splited := splitSpell(spell)
+	checked := checksplitedRes(splited)
+	replaced := replaceIllegaled(illegaled, checked)
+	legalFileName := makelegalFilename(replaced, fileChar)
+	path,newFileName := makeNew(strings.Join(legalFileName, ""))
+	fmt.Println(path,newFileName)
 }
 
 func renameFile(newFileName,path,filName string){
