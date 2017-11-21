@@ -27,7 +27,7 @@ func init() {
 	minuim = 1
 }
 
-func mains() {
+func main() {
 	fileName := extractFrom(os.Args)
 	illegaled, fileChar := pickFrom(fileName)
 	joined := joinillegaled(illegaled)
@@ -40,9 +40,9 @@ func mains() {
 	renameFile(newFileName,path,fileName)
 }
 
-func main(){
-	mainTest()
-}
+//func main(){
+//	mainTest()
+//}
 
 func mainTest(){
 	fileName := "./海米风控模型1.21（标记版）.xlsx"
