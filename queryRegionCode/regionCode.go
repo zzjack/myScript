@@ -21,6 +21,8 @@ var (
 	patternRightBracket *regexp.Regexp
 )
 
+const thread  = 20
+
 type config struct {
 	FilePath  string              `json:"file_path"`
 	FileType  string              `json:"file_type"`
@@ -29,11 +31,10 @@ type config struct {
 }
 
 func init() {
-	verifyArgs()
-	confPath := os.Args[1]
+	confPath := extractPath()
 	//confPath := "/home/gopath/src/myScript/queryRegionCode/queryRegionCodeConf.json"
 	conf = loadConf(confPath)
-	makeConn(confPath)
+	makeConn()
 	left, _ := regexp.Compile(`（`)
 	patternLeftBracket = left
 	right, _ := regexp.Compile(`）`)
@@ -50,7 +51,7 @@ func main() {
 	defer dbssd.Close()
 }
 
-func (c config) insertVal(value [10][]BsdHighDangerArea) {
+func (c config) insertVal(value [thread][]BsdHighDangerArea) {
 	var wg sync.WaitGroup
 	for _, val := range value {
 		if len(val) == 0 {
@@ -58,8 +59,8 @@ func (c config) insertVal(value [10][]BsdHighDangerArea) {
 		}
 		wg.Add(1)
 		go func(val []BsdHighDangerArea){
-			for _, v := range val {
-				log.Println("insert table", v)
+			for i, v := range val {
+				log.Println("Num:",i,"insert table", v)
 				dbhelpme.Create(&v)
 			//	note:if there is dbhelpme.commit,the insert will fail.
 			}
@@ -76,8 +77,8 @@ func (c config) emptyTable() {
 }
 
 //the thought of switch was learned from Learning C Program
-func (c config) generateVal(provCt map[string][]string, allCode []GeoCode) [10][]BsdHighDangerArea {
-	var bowl [10][]BsdHighDangerArea
+func (c config) generateVal(provCt map[string][]string, allCode []GeoCode) [thread][]BsdHighDangerArea {
+	var bowl [thread][]BsdHighDangerArea
 	counter := 0
 	for _, geo := range allCode {
 		for pro, city := range provCt {
@@ -115,7 +116,7 @@ func (c config) generateVal(provCt map[string][]string, allCode []GeoCode) [10][
 				}
 			}
 			counter++
-			if counter == 10 {
+			if counter == thread {
 				counter = 0
 			}
 		}
@@ -130,10 +131,14 @@ func (c config) getAllCodes() []GeoCode {
 	return g
 }
 
-func verifyArgs() {
-	if len(os.Args) < 1 {
+func extractPath()string{
+	var path string
+	if len(os.Args) < 2 {
 		log.Fatalln("please enter config path")
+	} else {
+		path = os.Args[1]
 	}
+	return path
 }
 
 func (c config) parseFile() map[string][]string {
@@ -175,7 +180,6 @@ func (c config) parseFile() map[string][]string {
 			log.Fatalln("Unexpected situation when parsing file", s)
 		}
 	}
-	log.Println(res)
 	return res
 }
 
@@ -197,7 +201,7 @@ func checkErr(err error, tag string) {
 	}
 }
 
-func makeConn(confPath string) {
+func makeConn() {
 	connModel := "%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local"
 	ssdInfo := conf.Databases["ssd"]
 	helpmeInfo := conf.Databases["helpme"]
