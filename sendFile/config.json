@@ -2,8 +2,8 @@
   "user_conf":{
     "crawler-pro":{
       "user_name":"root",
-      "passwd":"eY4g45WrGCH6734jyFhsR1G4",
-      "host" : "121.43.165.90",
+      "passwd":"",
+      "host" : "",
       "send_path":"/usr/local",
       "port":"18650"
     }
